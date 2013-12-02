@@ -21,16 +21,40 @@ import com.wannatalk.server.utils.StringUtils;
 
 public class H2Database {
 	static Logger log = Logger.getLogger(H2Database.class);
+	
 	private static final String DB_FILE_PATH = "~/wannatalk";
 	private static final String DB_USERNAME  = "sa";
 	private static final String DB_PWD       = "";
 	
-	private H2Database h2Database = null;
+	boolean insert_user(String username, String password) {
+		PreparedStatement st = null;
+		String sql = "Insert into user values ('" + username + "', '" + password +"' );";
+		try {
+			st = getPreparedStatement(sql);
+			st.executeUpdate();
+		} catch (SQLException e) {
+			log.error("Exception : insert into user error");
+			return false;
+		} finally {
+			try {
+				Connection conn = st.getConnection();
+				st.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				log.error("Exception : close statement or connection error! in insert_server");
+			}
+		}
+		return true;
+	}
+	
+	
+	private static H2Database h2Database = null;
 	H2Database(){
 		
 	}
 	
-	H2Database getInstance(){
+	public static H2Database getInstance(){
 		if(h2Database == null) {
 			h2Database = new H2Database();
 		}
@@ -39,14 +63,7 @@ public class H2Database {
 	
 	void init() throws SQLException {
 		log.info("begin to init h2database");
-		
-		try {
-			Class.forName("org.h2.driver");
-		} catch(Exception e) {
-			log.info("Exception : can not find h2 driver, please make sure the h2.jar is in the correct dir");
-			throw new SQLException("h2 driver can not be found");
-		}
-	
+
 		Statement st = null;
 		try {
 			st = getStatement();
@@ -130,7 +147,7 @@ public class H2Database {
 		return connection.createStatement();
 	}
 	
-	private PreparedStatement getPrepareStatement(String sql) throws SQLException {
+	private PreparedStatement getPreparedStatement(String sql) throws SQLException {
 		Connection connection = getConnectionPool().getConnection();
 		if(connection == null) {
 			throw new SQLException("Exception : can not get connection from connection pool!");
@@ -141,9 +158,10 @@ public class H2Database {
 	
 	private static final String SQL_CREATE_TABLE_USER = 
 			"create table user (" +
-					"uid int," +
-					"username varchar(128)" + 
-					"password varchar(128)" + 
+					"uid int AUTO_INCREMENT," +
+					"username varchar(128)," + 
+					"password varchar(128)," +
+					"primary key(uid)" + 
 			")";
 	
 	private static final String SQL_CREATE_TABLE_SERVER_INFO = 

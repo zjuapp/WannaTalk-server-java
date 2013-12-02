@@ -5,5 +5,5 @@
 package com.wannatalk.server.data;
 
 public interface QueryService {
-	boolean registerUser(int uid, String userName);
+	public boolean registerUser(String userName, String password);
 }
