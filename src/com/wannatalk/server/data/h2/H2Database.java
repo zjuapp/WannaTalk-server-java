@@ -28,18 +28,23 @@ public class H2Database {
 	
 	boolean insert_user(String username, String password) {
 		PreparedStatement st = null;
-		String sql = "Insert into user values ('" + username + "', '" + password +"' );";
+		String sql = "Insert into user (username, password) values ('" + username + "', '" + password +"' );";
 		try {
 			st = getPreparedStatement(sql);
 			st.executeUpdate();
 		} catch (SQLException e) {
+			e.printStackTrace();
 			log.error("Exception : insert into user error");
 			return false;
 		} finally {
 			try {
-				Connection conn = st.getConnection();
-				st.close();
-				conn.close();
+				if(st == null ) {
+					log.debug("st == null!");
+				}else {
+					Connection conn = st.getConnection();
+					st.close();
+					conn.close();
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 				log.error("Exception : close statement or connection error! in insert_server");
@@ -63,7 +68,14 @@ public class H2Database {
 	
 	void init() throws SQLException {
 		log.info("begin to init h2database");
-
+		
+		try {
+	        Class.forName("org.h2.Driver");
+		} catch (Exception e) {
+			log.error("h2 database driver not found. Please ensure the driver jar is in classpath.");
+			throw new SQLException("h2 database driver not found");
+		}
+		
 		Statement st = null;
 		try {
 			st = getStatement();
@@ -76,11 +88,11 @@ public class H2Database {
 			}
 			log.debug("Existing tables - " + tableList.size() + "-" + tableList.toString());
 			
-			if(!tableList.contains("user")) {
+			if(!tableList.contains("USER")) {
 				log.info("create table user");
 				st.execute(SQL_CREATE_TABLE_USER);
 			}
-			if(!tableList.contains("server_info")) {
+			if(!tableList.contains("SERVER_INFO")) {
 				log.info("create table server_info");
 				st.execute(SQL_CREATE_TABLE_SERVER_INFO);
 			}
@@ -166,7 +178,7 @@ public class H2Database {
 	
 	private static final String SQL_CREATE_TABLE_SERVER_INFO = 
 			"create table server_info (" +
-					"server_id int" +
+					"server_id varchar(512)" +
 			")";
 					
 									
