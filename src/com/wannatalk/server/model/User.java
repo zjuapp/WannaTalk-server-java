@@ -1,17 +1,19 @@
 package com.wannatalk.server.model;
 
 public class User {
-	private String username;
-	private int uid;
-	
-	User() {
-		username = null;
-		uid      = -1;
+	public String username = null;
+	public String password = null;
+	public int 	  uid	   = -1;
+	public int    sex 	   = -1;
+	public int 	  motion   = -1;
+	public User() {
 	}
 	
-	User(String _username, int _uid) {
+	public User(String _username, String _password, int _sex, int _motion) {
 		username = _username;
-		uid 	 = _uid;
+		password = _password;
+		sex      = _sex;
+		motion   = _motion;	
 	}
 	
 }

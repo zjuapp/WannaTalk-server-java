@@ -17,18 +17,20 @@ import org.apache.log4j.Logger;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 import com.wannatalk.server.ServerConfig;
+import com.wannatalk.server.model.User;
 import com.wannatalk.server.utils.StringUtils;
 
 public class H2Database {
 	static Logger log = Logger.getLogger(H2Database.class);
-	
+	public static final String TAG = "H2Database";
 	private static final String DB_FILE_PATH = "~/wannatalk";
 	private static final String DB_USERNAME  = "sa";
 	private static final String DB_PWD       = "";
 	
-	boolean insert_user(String username, String password) {
+	public boolean insert_user(User user) {
 		PreparedStatement st = null;
-		String sql = "Insert into user (username, password) values ('" + username + "', '" + password +"' );";
+		String sql = 
+				"Insert into user (username, password, sex, motion) values ('" + user.username + "', '" + user.password +"', " + user.sex + "," + user.motion + " );";
 		try {
 			st = getPreparedStatement(sql);
 			st.executeUpdate();
@@ -53,6 +55,43 @@ public class H2Database {
 		return true;
 	}
 	
+	public User getUser(String uid) {
+		PreparedStatement st = null;
+		String sql = "select * from user where uid = " + uid;
+		ResultSet rs = null;
+		try {
+			st = getPreparedStatement(sql);
+			rs = st.executeQuery();
+			if(rs.next()) {
+				String username = rs.getString("username");
+				int motion = rs.getInt("motion");
+				int sex    = rs.getInt("sex"); 
+				User user = new User();
+				user.username = username;
+				user.motion   = motion;
+				user.sex      = sex;
+				return user;
+			}else {
+				log.error(TAG + "rs row count is zero ");
+				return null;
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+			log.error("Exception : " + sql);
+			return null;
+		} finally {
+			try {
+				if(st != null) {
+					Connection conn = st.getConnection();
+					st.close();
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
 	
 	private static H2Database h2Database = null;
 	H2Database(){
@@ -173,6 +212,8 @@ public class H2Database {
 					"uid int AUTO_INCREMENT," +
 					"username varchar(128)," + 
 					"password varchar(128)," +
+					"motion int," +
+					"sex int ," +
 					"primary key(uid)" + 
 			")";
 	

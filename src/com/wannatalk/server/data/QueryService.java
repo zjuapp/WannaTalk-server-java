@@ -4,6 +4,9 @@
  */
 package com.wannatalk.server.data;
 
+import com.wannatalk.server.model.User;
+
 public interface QueryService {
-	public boolean registerUser(String userName, String password);
+	public boolean registerUser(User user);
+	public User getUser(String uid);
 }

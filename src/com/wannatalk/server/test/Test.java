@@ -13,7 +13,7 @@ public class Test {
 		HttpClient client = new HttpClient();
 		client.getHostConfiguration().setHost("localhost",8081,"http");
 		PostMethod method = new PostMethod("/api/register");
-		NameValuePair []user = {new NameValuePair("username", "test"), new NameValuePair("password", "123")};
+		NameValuePair []user = {new NameValuePair("username", "gsl"), new NameValuePair("password", "123"), new NameValuePair("sex", "1"), new NameValuePair("motion", "1")};
 		method.setRequestBody(user);
 		client.executeMethod(method);
 		System.out.println(method.getStatusLine());

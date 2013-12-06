@@ -1,6 +1,8 @@
 package com.wannatalk.server.api;
 
-public class LoginServlet {
+import com.wannatalk.server.web.common.CommonHttpServlet;
+
+public class LoginServlet extends CommonHttpServlet{
 
 
 

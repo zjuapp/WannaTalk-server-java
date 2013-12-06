@@ -12,9 +12,9 @@ import com.google.gson.Gson;
 import com.wannatalk.server.data.QueryService;
 import com.wannatalk.server.data.h2.QueryServiceImpl;
 
-public class CommomHttpServlet extends HttpServlet{
+public class CommonHttpServlet extends HttpServlet{
 	protected QueryService qs = null;
-	static Logger log = Logger.getLogger(CommomHttpServlet.class);
+	static Logger log = Logger.getLogger(CommonHttpServlet.class);
 	protected static Gson gson = new Gson();
 	
 	@Override

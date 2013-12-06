@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 import com.wannatalk.server.data.QueryService;
+import com.wannatalk.server.model.User;
 
 public class QueryServiceImpl implements QueryService{
 	H2Database h2DB = null;
@@ -20,9 +21,19 @@ public class QueryServiceImpl implements QueryService{
 	}
 	
 	@Override
-	public boolean registerUser(String userName, String password) {
-		return h2DB.insert_user(userName, password);
+	public boolean registerUser(User user) {
+		return h2DB.insert_user(user);
 	}
+
+	@Override
+	public User getUser(String uid) {
+		User user = h2DB.getUser(uid);
+		return user;
+	}
+
+	
+	
+	
 
 
 }
