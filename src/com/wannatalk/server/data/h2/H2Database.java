@@ -213,14 +213,24 @@ public class H2Database {
 					"username varchar(128)," + 
 					"password varchar(128)," +
 					"motion int," +
-					"sex int ," +
+					"motoinLevel int," +
+					"signature varchar(128)," +
+					"sex int," +
+					"lon int," +
+					"lat int," +
+					"state int," +
 					"primary key(uid)" + 
 			")";
-	
+	private static final String SQL_CREATE_TABLE_MOTION = 
+			"create table emotion (" +
+					"id int ," +
+					"img varchar(512)," +
+					"desp varchar(512)," +
+					"primary key(id)";
 	private static final String SQL_CREATE_TABLE_SERVER_INFO = 
 			"create table server_info (" +
 					"server_id varchar(512)" +
 			")";
-					
+	
 									
 }

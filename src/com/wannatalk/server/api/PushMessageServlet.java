@@ -18,12 +18,14 @@ import com.wannatalk.server.web.common.CommonHttpServlet;
 
 public class PushMessageServlet extends CommonHttpServlet{
 	private static Logger log = Logger.getLogger(PushMessageServlet.class);
-	
+	public static final String TAG = "PushMessageServlet";
 	private static int sendId = getRandomSendNo();
 	private static final JPushClient jPushClient = new JPushClient(ServerConfig.MASTER_SECRET, ServerConfig.JPUSH_APPKEY);
+	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		log.debug(TAG + " is invoked");
 		String mesg     = request.getParameter("message");
 		String friend   = request.getParameter("friend");
 		String uid      = request.getParameter("uid");
@@ -46,6 +48,7 @@ public class PushMessageServlet extends CommonHttpServlet{
 		MessageResult mr = null;
 		Map<String , Object> extra = new HashMap<String, Object>();
 		sendId++;
+		log.debug("send id = " + sendId);
 		extra.put("sendNo", sendId);
 		mr = jPushClient.sendCustomMessageWithAlias(sendId, friend, username, mesg, null, extra);
 		if(mr == null) {
@@ -54,18 +57,18 @@ public class PushMessageServlet extends CommonHttpServlet{
 			return;
 		}else if (mr.getErrcode() != 0) {
 			String info = "message result error code : " + mr.getErrcode() +
-					"error message : " + mr.getErrmsg() + 
-					"sendNo : " + mr.getSendno();
+					" error message : " + mr.getErrmsg() + 
+					" sendNo : " + mr.getSendno();
 			log.error("Error : " + info);
 			responseError(response, info);
 			return;
 		} else {
 			responseSucc(response, "send ok");
 		}
-		
 	}
-	public static final int MIN = Integer.MIN_VALUE / 2;
+	public static final int MIN = Integer.MIN_VALUE / 4;
 	public static final int MAX = Integer.MAX_VALUE / 2;
+	
 	public static int getRandomSendNo() {
 		return (int) (MIN + Math.random() * (MAX - MIN));
 	}
