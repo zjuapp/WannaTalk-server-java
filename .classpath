@@ -18,5 +18,10 @@
 	<classpathentry kind="lib" path="C:/Users/Administrator/workspace/WannaTalk-server-java/lib/guava-11.0.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/workspace/WannaTalk-server-java/lib/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/workspace/WannaTalk-server-java/lib/slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/workspace/WannaTalk-server-java/jdom-2/jdom-2.0.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/workspace/WannaTalk-server-java/jdom-2/jdom-2.0.5-contrib.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/workspace/WannaTalk-server-java/jdom-2/jdom-2.0.5-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/workspace/WannaTalk-server-java/jdom-2/jdom-2.0.5-junit.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/workspace/WannaTalk-server-java/jdom-2/jdom-2.0.5-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

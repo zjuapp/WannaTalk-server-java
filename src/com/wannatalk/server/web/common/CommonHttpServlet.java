@@ -19,12 +19,8 @@ public class CommonHttpServlet extends HttpServlet{
 	
 	@Override
 	public void init() {
-		try {
-			if (qs == null) {
-				qs = new QueryServiceImpl();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		if (qs == null) {
+			qs = new QueryServiceImpl();
 		}
 	}
 	

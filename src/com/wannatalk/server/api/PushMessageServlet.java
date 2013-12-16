@@ -30,6 +30,7 @@ public class PushMessageServlet extends CommonHttpServlet{
 		String friend   = request.getParameter("friend");
 		String uid      = request.getParameter("uid");
 		String username = qs.getUser(uid).username;
+		log.debug(TAG + " mesg is " + mesg);
 		if(uid == null) {
 			log.error("Error : uid is required");
 			responseError(response, "Error : uid is required");
@@ -63,6 +64,7 @@ public class PushMessageServlet extends CommonHttpServlet{
 			responseError(response, info);
 			return;
 		} else {
+			log.debug("send ok!!!!!");
 			responseSucc(response, "send ok");
 		}
 	}
@@ -70,6 +72,6 @@ public class PushMessageServlet extends CommonHttpServlet{
 	public static final int MAX = Integer.MAX_VALUE / 2;
 	
 	public static int getRandomSendNo() {
-		return (int) (MIN + Math.random() * (MAX - MIN));
+		return Math.abs((int) (MIN + Math.random() * (MAX - MIN)));
 	}
 }

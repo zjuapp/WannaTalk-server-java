@@ -32,6 +32,7 @@ public class RequestUserInfoServlet  extends CommonHttpServlet{
 		User user = qs.getUser(uid);
 		if(user == null) {
 			log.error("get user error, user == null!");
+			return;
 		}
 		log.debug("get user ok ! username : " + user.username );
 		Gson gson = new Gson();

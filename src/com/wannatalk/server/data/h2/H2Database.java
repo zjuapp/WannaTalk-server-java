@@ -11,93 +11,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 import com.wannatalk.server.ServerConfig;
+import com.wannatalk.server.model.MapPoint;
 import com.wannatalk.server.model.User;
 import com.wannatalk.server.utils.StringUtils;
 
 public class H2Database {
 	static Logger log = Logger.getLogger(H2Database.class);
-	public static final String TAG = "H2Database";
+	
 	private static final String DB_FILE_PATH = "~/wannatalk";
 	private static final String DB_USERNAME  = "sa";
 	private static final String DB_PWD       = "";
-	
-	public boolean insert_user(User user) {
-		PreparedStatement st = null;
-		String sql = 
-				"Insert into user (username, password, sex, motion) values ('" + user.username + "', '" + user.password +"', " + user.sex + "," + user.motion + " );";
-		try {
-			st = getPreparedStatement(sql);
-			st.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			log.error("Exception : insert into user error");
-			return false;
-		} finally {
-			try {
-				if(st == null ) {
-					log.debug("st == null!");
-				}else {
-					Connection conn = st.getConnection();
-					st.close();
-					conn.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				log.error("Exception : close statement or connection error! in insert_server");
-			}
-		}
-		return true;
-	}
-	
-	public User getUser(String uid) {
-		PreparedStatement st = null;
-		String sql = "select * from user where uid = " + uid;
-		ResultSet rs = null;
-		try {
-			st = getPreparedStatement(sql);
-			rs = st.executeQuery();
-			if(rs.next()) {
-				String username = rs.getString("username");
-				int motion = rs.getInt("motion");
-				int sex    = rs.getInt("sex"); 
-				User user = new User();
-				user.username = username;
-				user.motion   = motion;
-				user.sex      = sex;
-				return user;
-			}else {
-				log.error(TAG + "rs row count is zero ");
-				return null;
-			}
-		} catch(SQLException e) {
-			e.printStackTrace();
-			log.error("Exception : " + sql);
-			return null;
-		} finally {
-			try {
-				if(st != null) {
-					Connection conn = st.getConnection();
-					st.close();
-					conn.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
-	}
-	
 	private static H2Database h2Database = null;
+
 	H2Database(){
 		
 	}
-	
 	public static H2Database getInstance(){
 		if(h2Database == null) {
 			h2Database = new H2Database();
@@ -107,14 +42,6 @@ public class H2Database {
 	
 	void init() throws SQLException {
 		log.info("begin to init h2database");
-		
-		try {
-	        Class.forName("org.h2.Driver");
-		} catch (Exception e) {
-			log.error("h2 database driver not found. Please ensure the driver jar is in classpath.");
-			throw new SQLException("h2 database driver not found");
-		}
-		
 		Statement st = null;
 		try {
 			st = getStatement();
@@ -126,7 +53,6 @@ public class H2Database {
 				tableList.add(rs.getString("TABLE_NAME"));
 			}
 			log.debug("Existing tables - " + tableList.size() + "-" + tableList.toString());
-			
 			if(!tableList.contains("USER")) {
 				log.info("create table user");
 				st.execute(SQL_CREATE_TABLE_USER);
@@ -137,10 +63,9 @@ public class H2Database {
 			}
 			
 			String sql = "select * from server_info";
-			
 			rs = st.executeQuery(sql);
 			if(rs.next()) {
-				ServerConfig.SERVER_ID = rs.getString(1);;
+				ServerConfig.SERVER_ID = rs.getString(1);
 			} else {
 				ServerConfig.SERVER_ID = StringUtils.getRandomString();
 				sql = "insert into server_info values ('" + ServerConfig.SERVER_ID + " ')";
@@ -168,9 +93,147 @@ public class H2Database {
 		}
 	}
 	
+	public List <User> search_user(MapPoint center, int r){
+		try{
+			log.debug("search_user is invoked");
+			Statement statement = getStatement();
+			ResultSet res = statement.executeQuery("select * from user");
+			List <User> res_users = new ArrayList<User>();
+			log.debug("res has " + res.getRow());
+			while(res.next()){
+				res_users.add(new User(res.getInt("uid"), res.getString("username"), 
+						res.getString("password"), res.getInt("motion"),
+						res.getInt("motoinLevel"), res.getString("signature"),
+						res.getInt("sex"), res.getInt("lat"), res.getInt("lon"),
+						res.getInt("state")));
+			}
+			return res_users;
+		}
+		catch(SQLException E){
+			E.printStackTrace();
+		}
+		return null;
+		/*
+		PreparedStatement statement = null;
+		try{
+			statement =  getPreparedStatement(SearchPerson);
+			statement.setInt(1, center.lat);
+			statement.setInt(2, center.lat);
+			statement.setInt(3, center.lon);
+			statement.setInt(4, center.lon);
+			statement.setInt(5, r);
+			statement.setInt(6, r);
+			ResultSet res = statement.executeQuery();
+			List <User> res_users = new ArrayList<User>();
+			while(res.next()){
+				res_users.add(new User(res.getInt("uid"), res.getString("username"), 
+						res.getString("password"), res.getInt("motion"),
+						res.getInt("motoinLevel"), res.getString("signature"),
+						res.getInt("sex"), res.getInt("lat"), res.getInt("lon"),
+						res.getInt("state")));
+			}
+			return res_users;
+		}
+		catch(SQLException E){
+			E.printStackTrace();
+		}finally {
+			try {
+				Connection conn = statement.getConnection();
+				statement.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				log.error("Exception : close statement or connection error! in insert_server");
+			}
+		}
+		return null;
+		*/
+	}
 	
+	public int judge(String userName, String password) {
+		log.debug("judge is invoked");
+		PreparedStatement statement = null;
+		try{
+			statement = getPreparedStatement(JudgeLogin);
+			statement.setString(1, userName);
+			statement.setString(2, password);
+			ResultSet res = statement.executeQuery();
+			if(res.next()){
+				log.debug("login uid is " + res.getInt("uid"));
+				return res.getInt("uid");
+			}
+			else
+				return 0;
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return 0;
+		}
+		finally {
+			if(statement == null)
+				return 0;
+			try {
+				Connection conn = statement.getConnection();
+				statement.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public boolean insert_user(String username, String password, String sex) {
+		// TODO Auto-generated method stub
+			PreparedStatement st = null;
+			try {
+				st = getPreparedStatement(RegisterPerson);
+				st.setString(1, username);
+				st.setString(2, password);
+				st.setString(3, sex);
+				st.executeUpdate();
+				
+			} catch (SQLException e) {
+				log.error("Exception : insert into user error");
+				e.printStackTrace();
+				return false;
+			} finally {
+				try {
+					if(st != null){
+						Connection conn = st.getConnection();
+						st.close();
+						conn.close();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+					log.error("Exception : close statement or connection error! in insert_server");
+				}
+			}
+			log.debug("insert into user ok!");
+			return true;
+	}	
 	
-	
+	public User get_user_by_id(int id){
+		PreparedStatement st = null;
+		String sql = "select * from user where uid = " + id;
+		try{
+			log.debug(sql);
+			st = getPreparedStatement(sql);
+			ResultSet res = st.executeQuery();
+			if(res.next()){
+				return new User(res.getInt("uid"), res.getString("username"), 
+						res.getString("password"), res.getInt("motion"),
+						res.getInt("motoinLevel"), res.getString("signature"),
+						res.getInt("sex"), res.getInt("lat"), res.getInt("lon"),
+						res.getInt("state"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			log.error("Exception : get user by id error!!");
+			return null;
+		}
+		
+		return null;
+	}
 	private BoneCP connectionPool = null;
 	
 	private BoneCP getConnectionPool() throws SQLException {
@@ -179,12 +242,10 @@ public class H2Database {
 			BoneCPConfig config = new BoneCPConfig();
 			config.setJdbcUrl("jdbc:h2:file:" + DB_FILE_PATH);
 			config.setUser(DB_USERNAME);
-			config.setPassword(DB_PWD);
-			
+			config.setPassword(DB_PWD);		
 			config.setMinConnectionsPerPartition(5);  // max connections in one partion
-			config.setMaxConnectionsPerPartition(10); // min connections in one partion
+			config.setMaxConnectionsPerPartition(100); // min connections in one partion
 			config.setPartitionCount(1);              // set one partion for this app
-			
 			connectionPool = new BoneCP(config);
 		}
 		return connectionPool;
@@ -205,32 +266,30 @@ public class H2Database {
 		}
 		return connection.prepareStatement(sql);
 	}
-	
-	
+
+
 	private static final String SQL_CREATE_TABLE_USER = 
-			"create table user (" +
-					"uid int AUTO_INCREMENT," +
-					"username varchar(128)," + 
-					"password varchar(128)," +
-					"motion int," +
-					"motoinLevel int," +
-					"signature varchar(128)," +
-					"sex int," +
-					"lon int," +
-					"lat int," +
-					"state int," +
-					"primary key(uid)" + 
-			")";
-	private static final String SQL_CREATE_TABLE_MOTION = 
-			"create table emotion (" +
-					"id int ," +
-					"img varchar(512)," +
-					"desp varchar(512)," +
-					"primary key(id)";
+              "create table if not exists user (" +
+                              "uid int AUTO_INCREMENT," +
+                              "username varchar(128)," + 
+                              "password varchar(128)," +
+                              "motion int," +
+                              "motoinLevel int," +
+                              "signature varchar(128)," +
+                              "sex int," +
+                              "lon int," +
+                              "lat int," +
+                              "state int," +
+                              "primary key(uid)" + 
+              ")";
 	private static final String SQL_CREATE_TABLE_SERVER_INFO = 
 			"create table server_info (" +
-					"server_id varchar(512)" +
+					"server_id int" +
 			")";
+	private static final String SearchPerson = "select * from user where (( lat - ?) * (lat - ?) + (lon - ?) * (lon - ?)) < ? * ? and state = 1;";
+	private static final String InsertPerson = "insert into user (username,password,motion,motoinlevel,signature,sex,lat,lon,state) "
+			+ "values (?, ?, ?, ?, ?, ?, ?, ?,?);";
+	private static final String RegisterPerson = "insert into user (username, password, sex) values (?, ? ,?)";
+	private static final String JudgeLogin = "select * from user where username = ? and password = ?";
 	
-									
 }

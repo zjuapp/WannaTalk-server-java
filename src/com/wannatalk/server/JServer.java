@@ -5,9 +5,11 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import com.wannatalk.server.api.LoginServlet;
 import com.wannatalk.server.api.PushMessageServlet;
 import com.wannatalk.server.api.RegisterServlet;
 import com.wannatalk.server.api.RequestUserInfoServlet;
+import com.wannatalk.server.api.SearchServlet;
 import com.wannatalk.server.web.HelloServlet;
 public class JServer {
 	static Logger log = Logger.getLogger(JServer.class);
@@ -19,8 +21,10 @@ public class JServer {
         server.setHandler(context);
         context.addServlet(new ServletHolder(new HelloServlet()), "/hello");
         context.addServlet(new ServletHolder(new RegisterServlet()),"/api/register");
+        context.addServlet(new ServletHolder(new LoginServlet()),"/api/login");
         context.addServlet(new ServletHolder(new RequestUserInfoServlet()), "/api/request_user_info");
         context.addServlet(new ServletHolder(new PushMessageServlet()), "/api/push_message");
+        context.addServlet(new ServletHolder(new SearchServlet()), "/api/search");
 		server.start();
 		server.join();
 	}
