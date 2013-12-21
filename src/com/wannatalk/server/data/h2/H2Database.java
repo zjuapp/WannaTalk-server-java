@@ -139,7 +139,7 @@ public class H2Database {
 		*/
 	}
 	
-	public int judge(String userName, String password) {
+	public List <User> judge(String userName, String password) {
 		log.debug("judge is invoked");
 		PreparedStatement statement = null;
 		try{
@@ -147,20 +147,26 @@ public class H2Database {
 			statement.setString(1, userName);
 			statement.setString(2, password);
 			ResultSet res = statement.executeQuery();
+			List <User> res_users = new ArrayList<User>();
 			if(res.next()){
 				log.debug("login uid is " + res.getInt("uid"));
-				return res.getInt("uid");
+				res_users.add(new User(res.getInt("uid"), res.getString("username"), 
+						res.getString("password"), res.getInt("motion"),
+						res.getInt("motoinLevel"), res.getString("signature"),
+						res.getInt("sex"), res.getInt("lat"), res.getInt("lon"),
+						res.getInt("state")));
+				return res_users;
 			}
 			else
-				return 0;
+				return null;
 		}
 		catch(Exception e){
 			e.printStackTrace();
-			return 0;
+			return null;
 		}
 		finally {
 			if(statement == null)
-				return 0;
+				return null;
 			try {
 				Connection conn = statement.getConnection();
 				statement.close();
@@ -223,13 +229,15 @@ public class H2Database {
 		
 		return null;
 	}
-	public Boolean updatemotion(int id, int motionid, int motionlevel) {
+	public Boolean updatesignatureandmotion(int id, String signature,
+			int motionid, int motionlevel) {
 		PreparedStatement st = null;
 		try{
-			st = getPreparedStatement(UpdateMotion);
+			st = getPreparedStatement(UpdateSignatureAndMotion);
 			st.setInt(1, motionid);
 			st.setInt(2, motionlevel);
-			st.setInt(3, id);
+			st.setString(3, signature);
+			st.setInt(4, id);
 			st.executeUpdate();
 			return true;
 		}
@@ -239,21 +247,7 @@ public class H2Database {
 			return false;
 		}
 	}
-	public Boolean updatesignature(int id, String signature) {
-		PreparedStatement st = null;
-		try{
-			st = getPreparedStatement(UpdateSignature);
-			st.setString(1, signature);
-			st.setInt(2, id);
-			st.executeUpdate();
-			return true;
-		}
-		catch(SQLException e){
-			e.printStackTrace();
-			log.error("Exception: update position error");
-			return false;
-		}
-	}
+
 	public boolean updatepos(int id, int lat, int lon){
 		PreparedStatement st = null;
 		try{
@@ -327,8 +321,7 @@ public class H2Database {
 	private static final String RegisterPerson = "insert into user (username, password, sex) values (?, ? ,?)";
 	private static final String JudgeLogin = "select * from user where username = ? and password = ?";
 	private static final String UpdatePos = "update user set lat = ?, lon = ? where uid = ?";	
-	private static final String UpdateMotion = "update user set motion = ?, motoinlevel = ? where uid = ?";
-	private static final String UpdateSignature = "update user set signature = ? where uid = ?";
-
+	private static final String UpdateSignatureAndMotion = "update user set motion = ?, motoinlevel = ?, signature = ? where uid = ?";
+	
 	
 }

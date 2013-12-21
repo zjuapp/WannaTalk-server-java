@@ -25,7 +25,7 @@ public class QueryServiceImpl implements QueryService{
 	}
 	
 	@Override
-	public int judge(String userName, String password) {
+	public List <User> judge(String userName, String password) {
 		// TODO Auto-generated method stub
 		return h2DB.judge(userName, password);
 	}
@@ -51,14 +51,10 @@ public class QueryServiceImpl implements QueryService{
 	public boolean updatepos(int id, int lat, int lon){
 		return h2DB.updatepos(id, lat, lon);
 	}
+
 	@Override
-	public Boolean updatemotion(int id, int motionid, int motionlevel) {
-		// TODO Auto-generated method stub
-		return h2DB.updatemotion(id, motionid, motionlevel);
-	}
-	@Override
-	public Boolean updatesignature(int id, String signature) {
-		// TODO Auto-generated method stub
-		return h2DB.updatesignature(id, signature);
+	public Boolean updatesignatureandmotion(int id, String signature,
+			int motionid, int motionlevel) {
+		return h2DB.updatesignatureandmotion(id, signature, motionid, motionlevel);
 	}
 }

@@ -17,9 +17,9 @@ public interface QueryService {
 	public List <User> search_user(MapPoint center, int r);
 	public boolean add(String string, String string2, int j, int k,
 			String string3, int l, int m, int n, int o);
-	public int judge(String userName, String password);
+	public List <User> judge(String userName, String password);
 	public boolean registerUser(String userName, String password, String sex);
 	public boolean updatepos(int id, int lat, int lon);
-	public Boolean updatemotion(int id, int motionid, int motionlevel);
-	public Boolean updatesignature(int id, String signature);
+	public Boolean updatesignatureandmotion(int id, String signature,
+			int motionid, int motionlevel);
 }
