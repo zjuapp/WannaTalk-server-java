@@ -16,9 +16,6 @@ import org.jdom2.input.*;
 import org.jdom2.output.*;
 
 public class SearchServlet extends CommonHttpServlet{
-	public SearchServlet(){
-		super();
-	}
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String lat = request.getParameter("lat");

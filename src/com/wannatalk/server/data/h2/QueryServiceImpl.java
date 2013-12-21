@@ -48,4 +48,17 @@ public class QueryServiceImpl implements QueryService{
 		// TODO Auto-generated method stub
 		return false;
 	}
+	public boolean updatepos(int id, int lat, int lon){
+		return h2DB.updatepos(id, lat, lon);
+	}
+	@Override
+	public Boolean updatemotion(int id, int motionid, int motionlevel) {
+		// TODO Auto-generated method stub
+		return h2DB.updatemotion(id, motionid, motionlevel);
+	}
+	@Override
+	public Boolean updatesignature(int id, String signature) {
+		// TODO Auto-generated method stub
+		return h2DB.updatesignature(id, signature);
+	}
 }

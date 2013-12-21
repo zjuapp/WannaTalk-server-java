@@ -31,7 +31,6 @@ public class H2Database {
 	private static H2Database h2Database = null;
 
 	H2Database(){
-		
 	}
 	public static H2Database getInstance(){
 		if(h2Database == null) {
@@ -63,18 +62,7 @@ public class H2Database {
 			}
 			
 			String sql = "select * from server_info";
-			rs = st.executeQuery(sql);
-			if(rs.next()) {
-				ServerConfig.SERVER_ID = rs.getString(1);
-			} else {
-				ServerConfig.SERVER_ID = StringUtils.getRandomString();
-				sql = "insert into server_info values ('" + ServerConfig.SERVER_ID + " ')";
-				int ret = st.executeUpdate(sql);
-				if(ret <= 0) {
-					log.error("Database Error: failed insert into server_info!");
-					throw new SQLException("Exception : insert into server_info error");
-				}
-			}
+			
 			log.info("server id = " + ServerConfig.SERVER_ID);
 		} catch(Exception e) {
 			log.error("init error");
@@ -99,8 +87,9 @@ public class H2Database {
 			Statement statement = getStatement();
 			ResultSet res = statement.executeQuery("select * from user");
 			List <User> res_users = new ArrayList<User>();
-			log.debug("res has " + res.getRow());
+			int i = 0;
 			while(res.next()){
+				log.debug("res has " + i++);
 				res_users.add(new User(res.getInt("uid"), res.getString("username"), 
 						res.getString("password"), res.getInt("motion"),
 						res.getInt("motoinLevel"), res.getString("signature"),
@@ -234,6 +223,53 @@ public class H2Database {
 		
 		return null;
 	}
+	public Boolean updatemotion(int id, int motionid, int motionlevel) {
+		PreparedStatement st = null;
+		try{
+			st = getPreparedStatement(UpdateMotion);
+			st.setInt(1, motionid);
+			st.setInt(2, motionlevel);
+			st.setInt(3, id);
+			st.executeUpdate();
+			return true;
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			log.error("Exception: update position error");
+			return false;
+		}
+	}
+	public Boolean updatesignature(int id, String signature) {
+		PreparedStatement st = null;
+		try{
+			st = getPreparedStatement(UpdateSignature);
+			st.setString(1, signature);
+			st.setInt(2, id);
+			st.executeUpdate();
+			return true;
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			log.error("Exception: update position error");
+			return false;
+		}
+	}
+	public boolean updatepos(int id, int lat, int lon){
+		PreparedStatement st = null;
+		try{
+			st = getPreparedStatement(UpdatePos);
+			st.setInt(1, lat);
+			st.setInt(2, lon);
+			st.setInt(3, id);
+			st.executeUpdate();
+			return true;
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			log.error("Exception: update position error");
+			return false;
+		}
+	}
 	private BoneCP connectionPool = null;
 	
 	private BoneCP getConnectionPool() throws SQLException {
@@ -266,8 +302,7 @@ public class H2Database {
 		}
 		return connection.prepareStatement(sql);
 	}
-
-
+	
 	private static final String SQL_CREATE_TABLE_USER = 
               "create table if not exists user (" +
                               "uid int AUTO_INCREMENT," +
@@ -291,5 +326,9 @@ public class H2Database {
 			+ "values (?, ?, ?, ?, ?, ?, ?, ?,?);";
 	private static final String RegisterPerson = "insert into user (username, password, sex) values (?, ? ,?)";
 	private static final String JudgeLogin = "select * from user where username = ? and password = ?";
+	private static final String UpdatePos = "update user set lat = ?, lon = ? where uid = ?";	
+	private static final String UpdateMotion = "update user set motion = ?, motoinlevel = ? where uid = ?";
+	private static final String UpdateSignature = "update user set signature = ? where uid = ?";
+
 	
 }

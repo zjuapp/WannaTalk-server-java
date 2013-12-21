@@ -19,4 +19,7 @@ public interface QueryService {
 			String string3, int l, int m, int n, int o);
 	public int judge(String userName, String password);
 	public boolean registerUser(String userName, String password, String sex);
+	public boolean updatepos(int id, int lat, int lon);
+	public Boolean updatemotion(int id, int motionid, int motionlevel);
+	public Boolean updatesignature(int id, String signature);
 }
