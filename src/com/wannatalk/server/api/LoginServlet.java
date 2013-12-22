@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.spdy.api.Settings.Flag;
+
 import com.wannatalk.server.model.User;
 import com.wannatalk.server.web.common.CommonHttpServlet;
 
@@ -20,7 +22,10 @@ public class LoginServlet extends CommonHttpServlet{
 		List <User> res =  qs.judge(userName, password);
 		if(res == null)
 			response.getWriter().print("false");
-		else 
+		else {
+			Boolean flag = qs.updatestate(res.get(0).uid, 1);
+			System.out.println("update state " + res.get(0).uid + " 1 " + flag);
 			outputuser(res, response);
+		}
 	}
 }

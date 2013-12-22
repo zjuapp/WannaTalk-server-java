@@ -57,4 +57,8 @@ public class QueryServiceImpl implements QueryService{
 			int motionid, int motionlevel) {
 		return h2DB.updatesignatureandmotion(id, signature, motionid, motionlevel);
 	}
+	@Override
+	public boolean updatestate(int id, int state) {
+		return h2DB.updatestate(id, state);
+	}
 }

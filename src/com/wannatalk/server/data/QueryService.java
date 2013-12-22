@@ -22,4 +22,5 @@ public interface QueryService {
 	public boolean updatepos(int id, int lat, int lon);
 	public Boolean updatesignatureandmotion(int id, String signature,
 			int motionid, int motionlevel);
+	public boolean updatestate(int id, int state);
 }

@@ -12,6 +12,7 @@ import com.wannatalk.server.api.RequestUserInfoServlet;
 import com.wannatalk.server.api.SearchServlet;
 import com.wannatalk.server.api.UpdatePosServlet;
 import com.wannatalk.server.api.UpdateSignatureAndMotionServlet;
+import com.wannatalk.server.api.UpdateStateServlet;
 import com.wannatalk.server.api.UploadImageServlet;
 import com.wannatalk.server.web.HelloServlet;
 public class JServer {
@@ -31,7 +32,8 @@ public class JServer {
         context.addServlet(new ServletHolder(new UpdatePosServlet()), "/api/updatepos");
         context.addServlet(new ServletHolder(new UpdateSignatureAndMotionServlet()), "/api/updatemotionandsig");
         context.addServlet(new ServletHolder(new UploadImageServlet()), "/api/push_img");
-        server.start();
+        context.addServlet(new ServletHolder(new UpdateStateServlet()), "/api/updatestate");
+          server.start();
 		server.join();
 	}
 }

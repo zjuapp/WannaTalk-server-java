@@ -21,8 +21,16 @@ public class SearchServlet extends CommonHttpServlet{
 		String lat = request.getParameter("lat");
 		String lon = request.getParameter("lon");
 		String r = request.getParameter("r");
+		int motion = Integer.valueOf(request.getParameter("motion"));
+		int motionlevel = Integer.valueOf(request.getParameter("motionlevel"));
 		List <User> res = qs.search_user(new MapPoint(Integer.valueOf(lat), Integer.valueOf(lon)), Integer.valueOf(r));
 		try{
+			User.ref_motion = motion;
+			User.ref_motionlevel = motionlevel;
+			for(User  item : res){
+				item.setvalue();
+			}
+			User.sort(0, res.size() - 1, res);
 			outputuser(res, response);
 		}
 		catch(Exception e){

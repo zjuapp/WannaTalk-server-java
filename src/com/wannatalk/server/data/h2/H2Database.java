@@ -247,7 +247,21 @@ public class H2Database {
 			return false;
 		}
 	}
-
+	public boolean updatestate(int id, int state) {
+		PreparedStatement st = null;
+		try{
+			st = getPreparedStatement(UpdateState);
+			st.setInt(1, state);
+			st.setInt(2, id);
+			st.executeUpdate();
+			return true;
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			log.error("Exception: update position error");
+			return false;
+		}
+	}
 	public boolean updatepos(int id, int lat, int lon){
 		PreparedStatement st = null;
 		try{
@@ -322,6 +336,5 @@ public class H2Database {
 	private static final String JudgeLogin = "select * from user where username = ? and password = ?";
 	private static final String UpdatePos = "update user set lat = ?, lon = ? where uid = ?";	
 	private static final String UpdateSignatureAndMotion = "update user set motion = ?, motoinlevel = ?, signature = ? where uid = ?";
-	
-	
+	private static final String UpdateState = "update user set state = ? where uid = ?";
 }
