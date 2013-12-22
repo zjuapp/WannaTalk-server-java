@@ -60,7 +60,7 @@ public class PushMessageServlet extends CommonHttpServlet{
 			String info = "message result error code : " + mr.getErrcode() +
 					" error message : " + mr.getErrmsg() + 
 					" sendNo : " + mr.getSendno();
-			log.error("Error : " + info);
+			log.error("Error : " + info + " target is " + friend);
 			responseError(response, info);
 			return;
 		} else {

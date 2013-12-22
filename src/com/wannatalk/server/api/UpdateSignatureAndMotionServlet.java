@@ -1,3 +1,4 @@
+
 package com.wannatalk.server.api;
 
 import java.io.IOException;
@@ -8,16 +9,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.wannatalk.server.web.common.CommonHttpServlet;
 
-public class UpdateMotionServlet extends CommonHttpServlet{
+public class UpdateSignatureAndMotionServlet extends CommonHttpServlet{
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			 {
 		try{
+			int id = Integer.valueOf(request.getParameter("id"));
+			String signature = request.getParameter("signature");
 			int motionid = Integer.valueOf(request.getParameter("motion"));
 			int motionlevel = Integer.valueOf(request.getParameter("motionlevel"));
-			int id = Integer.valueOf(request.getParameter("id"));
-			Boolean res = qs.updatemotion(id, motionid, motionlevel);
+			Boolean res = qs.updatesignatureandmotion(id, signature, motionid, motionlevel);
 			response.getWriter().print(res);
-			System.out.println("update motion : " + id + " " + motionid + " " + motionlevel + " " + res);
+			System.out.println("update signature and motion : " + id + " " + signature + " " + motionid + " " + motionlevel);
 		}
 		catch(Exception e){
 			e.printStackTrace();
